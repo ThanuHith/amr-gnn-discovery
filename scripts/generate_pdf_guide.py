@@ -916,6 +916,153 @@ def build_pdf(output_path: Path) -> None:
         )
     )
 
+    # ==================== SECTION 7: FILE-BY-FILE CODEBASE GUIDE ====================
+    story.append(PageBreak())
+    story.append(P("7. Complete File-by-File Codebase Reference", h1_style))
+    story.append(
+        P(
+            "Every module in <font face='Courier'>amr-gnn-discovery</font> has a single, clean responsibility so researchers "
+            "and admissions reviewers can audit each component independently:"
+        )
+    )
+
+    code_table = [
+        [
+            P("<b>File Path</b>", cell_header),
+            P("<b>Key Symbols &amp; Responsibility</b>", cell_header),
+        ],
+        [
+            P("<font face='Courier'>src/data_pipeline/<br/>reference_antibiotics.py</font>", cell_bold),
+            P(
+                "Defines <font face='Courier'>CLINICAL_ANTIBIOTICS</font> (36 FDA/EMA clinical drugs across 10 classes), "
+                "<font face='Courier'>BENCHMARK_DISCOVERY_MOLECULES</font> (Halicin, Abaucin, Ciprofloxacin, controls), and "
+                "<font face='Courier'>compute_antibiotic_novelty()</font> for 2048-bit ECFP4 T<sub>max</sub> scoring.",
+                cell_style,
+            ),
+        ],
+        [
+            P("<font face='Courier'>src/data_pipeline/<br/>prepare_amr_dataset.py</font>", cell_bold),
+            P(
+                "Implements <font face='Courier'>standardize_smiles()</font>, <font face='Courier'>compute_amr_descriptors()</font> "
+                "(12 eNTRy/ADMET features), optional <font face='Courier'>--fetch-chembl</font> enrichment, and deterministic "
+                "<font face='Courier'>bemis_murcko_scaffold_split()</font> with zero-leakage assertions.",
+                cell_style,
+            ),
+        ],
+        [
+            P("<font face='Courier'>src/models/featurizer.py</font>", cell_bold),
+            P(
+                "<font face='Courier'>mol_to_graph_data()</font> builds 34-D node, 10-D edge, and 12-D global PyG "
+                "<font face='Courier'>Data</font> objects; <font face='Courier'>DescriptorScaler</font> performs train-only z-scoring.",
+                cell_style,
+            ),
+        ],
+        [
+            P("<font face='Courier'>src/models/baselines.py</font>", cell_bold),
+            P(
+                "<font face='Courier'>MultiTaskAMRBaseline</font> trains Random Forest &amp; XGBoost classifiers/regressors "
+                "over 2048-bit Morgan fingerprints + 12 standardized eNTRy descriptors.",
+                cell_style,
+            ),
+        ],
+        [
+            P("<font face='Courier'>src/models/amr_gnn.py</font>", cell_bold),
+            P(
+                "<font face='Courier'>AMRGraphNet</font> (2x edge-aware <font face='Courier'>GATv2Conv</font> + <font face='Courier'>GINConv</font> "
+                "+ dual pooling + global eNTRy fusion + 5 task heads) and <font face='Courier'>predict_with_uncertainty()</font> (MC Dropout).",
+                cell_style,
+            ),
+        ],
+        [
+            P("<font face='Courier'>src/xai/<br/>substructure_explainer.py</font>", cell_bold),
+            P(
+                "<font face='Courier'>compute_atom_attributions()</font>, <font face='Courier'>render_atom_attribution_image()</font> "
+                "(RDKit 2D Cairo pharmacophore/toxicophore heatmaps), and <font face='Courier'>audit_structural_alerts_and_entry()</font> (PAINS/Brenk/eNTRy).",
+                cell_style,
+            ),
+        ],
+        [
+            P("<font face='Courier'>src/generative/<br/>antibiotic_designer.py</font>", cell_bold),
+            P(
+                "<font face='Courier'>eNTRyAntibioticDesigner</font> runs 10 SMARTS bioisosteric edits + SELFIES mutations, "
+                "filters by MW/QED/SA_Score/T<sub>max</sub>, and ranks via <font face='Courier'>compute_amr_discovery_score()</font>.",
+                cell_style,
+            ),
+        ],
+        [
+            P("<font face='Courier'>src/evaluation/<br/>run_benchmarks.py</font>", cell_bold),
+            P(
+                "Trains RF, XGBoost, and AMRGraphNet end-to-end, saves checkpoints in <font face='Courier'>models/</font>, "
+                "computes <font face='Courier'>benchmark_metrics.json</font>, and renders all 4 300-DPI figures in <font face='Courier'>reports/figures/</font>.",
+                cell_style,
+            ),
+        ],
+        [
+            P("<font face='Courier'>app/main.py</font>", cell_bold),
+            P(
+                "5-tab Streamlit web application with sidebar SMILES controls, live MC Dropout inference, XAI heatmaps, "
+                "virtual screening, de novo optimization, benchmark viewer, and one-click PDF guide download.",
+                cell_style,
+            ),
+        ],
+        [
+            P("<font face='Courier'>tests/test_amr_pipeline.py<br/>.github/workflows/ci.yml</font>", cell_bold),
+            P(
+                "6 automated <font face='Courier'>unittest</font> checks covering SMILES standardization, zero scaffold leakage, "
+                "GNN MC Dropout, XAI image output, and de novo analog validity, executed automatically on GitHub Actions CI.",
+                cell_style,
+            ),
+        ],
+    ]
+    story.append(_make_table(code_table, [5.1 * cm, 12.2 * cm]))
+
+    # ==================== SECTION 8: REAL-WORLD SOURCING & LIVE CLOUD DEPLOY ====================
+    story.append(Spacer(1, 6))
+    story.append(P("8. Sourcing New Molecules (PubChem / ChEMBL) &amp; Live Cloud Deployment", h1_style))
+
+    story.append(P("8.1 How to Get New Candidate SMILES from PubChem &amp; ChEMBL", h2_style))
+    story.append(
+        B(
+            "<b>From PubChem (Single Molecule Testing):</b> Visit <font face='Courier'>https://pubchem.ncbi.nlm.nih.gov</font>, "
+            "search any compound name (e.g., <i>Zosurabalpin</i>, <i>Teixobactin</i>, or any experimental nitrofuran), scroll to "
+            "<b>Section 2.1.4 SMILES</b>, copy the Canonical or Isomeric SMILES string, and paste it directly into the "
+            "Streamlit left sidebar box."
+        )
+    )
+    story.append(
+        B(
+            "<b>From ChEMBL (Batch Screening &amp; Training Augmentation):</b> Visit <font face='Courier'>https://www.ebi.ac.uk/chembl</font>, "
+            "search organism targets such as <i>Escherichia coli</i> (<font face='Courier'>CHEMBL354</font>) or "
+            "<i>Acinetobacter baumannii</i> (<font face='Courier'>CHEMBL614425</font>), download the Bioactivities CSV, copy the "
+            "SMILES column into <b>Tab 3 — Virtual Screening (Custom Batch SMILES Input)</b>, or run "
+            "<font face='Courier'>py -m src.data_pipeline.prepare_amr_dataset --fetch-chembl</font> to pull live ChEMBL MIC records."
+        )
+    )
+
+    story.append(P("8.2 Deploying Your Repository Live on Streamlit Community Cloud (Free CV Link)", h2_style))
+    story.append(
+        P(
+            "Because your GitHub repository (<font face='Courier'>ThanuHith/amr-gnn-discovery</font>) already includes "
+            "<font face='Courier'>requirements.txt</font> and pre-trained checkpoints in <font face='Courier'>models/</font>, "
+            "you can publish a live public web link for German admissions committees and recruiters in 2 minutes:"
+        )
+    )
+    story.append(B("1. Go to <b>https://share.streamlit.io</b> and sign in with your <b>ThanuHith</b> GitHub account."))
+    story.append(B("2. Click <b>Create app &rarr; Deploy a public app from GitHub</b>."))
+    story.append(
+        B(
+            "3. Set <b>Repository</b> = <font face='Courier'>ThanuHith/amr-gnn-discovery</font>, "
+            "<b>Branch</b> = <font face='Courier'>main</font>, and <b>Main file path</b> = <font face='Courier'>app/main.py</font>."
+        )
+    )
+    story.append(
+        B(
+            "4. Click <b>Deploy!</b> Streamlit Cloud installs dependencies from <font face='Courier'>requirements.txt</font> "
+            "and serves your live interactive dashboard at a public URL (e.g., <font face='Courier'>https://amr-gnn-discovery.streamlit.app</font>) "
+            "that you can link directly in your CV and Statement of Purpose."
+        )
+    )
+
     doc.build(story, onFirstPage=_header_footer, onLaterPages=_header_footer)
 
 

@@ -174,6 +174,17 @@ def main() -> None:
     sidebar_img = Draw.MolToImage(mol, size=(280, 200))
     st.sidebar.image(sidebar_img, caption=f"Standardized: {profile['smiles']}", use_container_width=True)
 
+    guide_pdf_path = ROOT_DIR / "docs" / "PathoGraph_AMR_Complete_Master_Guide.pdf"
+    if guide_pdf_path.exists():
+        st.sidebar.markdown("---")
+        st.sidebar.download_button(
+            label="📄 Download Complete Project Guide (PDF)",
+            data=guide_pdf_path.read_bytes(),
+            file_name="PathoGraph_AMR_Complete_Master_Guide.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+        )
+
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
         [
             "1. AMR & Safety Profiler",
