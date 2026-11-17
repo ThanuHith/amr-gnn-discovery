@@ -1,0 +1,43 @@
+{
+  "total_compounds": 989,
+  "unique_murcko_scaffolds": 638,
+  "splits": {
+    "train": {
+      "count": 791,
+      "scaffolds": 506,
+      "active_abx_rate": 0.3692,
+      "gram_neg_accum_rate": 0.4842,
+      "cytotoxic_rate": 0.2427
+    },
+    "val": {
+      "count": 99,
+      "scaffolds": 72,
+      "active_abx_rate": 0.4242,
+      "gram_neg_accum_rate": 0.5152,
+      "cytotoxic_rate": 0.2727
+    },
+    "test": {
+      "count": 99,
+      "scaffolds": 60,
+      "active_abx_rate": 0.3636,
+      "gram_neg_accum_rate": 0.4141,
+      "cytotoxic_rate": 0.2929
+    }
+  },
+  "novel_scaffolds_count": 953,
+  "zero_scaffold_leakage": true,
+  "descriptor_names": [
+    "MW",
+    "LogP",
+    "TPSA",
+    "HBD",
+    "HBA",
+    "RotBonds",
+    "RingCount",
+    "FractionCSP3",
+    "HasPrimaryAmine",
+    "eNTRy_Score",
+    "QED",
+    "SA_Score"
+  ]
+}
